@@ -24,7 +24,7 @@ class _PostListsState extends State<PostLists> {
   File image;
   final picker = ImagePicker();
 
-  void getImages() async {
+  Future getImages() async {
     final pickedFile = await picker.getImage(source: ImageSource.camera);
     image = File(pickedFile.path);
     // StorageReference storageReference =
@@ -33,8 +33,10 @@ class _PostListsState extends State<PostLists> {
     // await uploadTask.onComplete;
     // final url = await storageReference.getDownloadURL();
     // print(url);
-
+    return image;
   }
+
+  
 
   Widget build(BuildContext context) {
     return ScaffoldWidget(
@@ -70,19 +72,31 @@ class _PostListsState extends State<PostLists> {
                 ),
                 RaisedButton(
                   child: Text('Select Photo'),
-                  onPressed: () {
+                  onPressed: () async {
+                     var theImage = await getImages();
+                      Navigator.pushNamed(
+                      context, 
+                      NewPost.routeName,
+                      arguments: ExtractorNewPost(
+                        image: theImage
+                      )
+                      );
+
+                  
+
                     // Firestore.instance.collection('posts').add({
                     //   'weight': 222,
                     //   'submission_date': DateTime.parse('2020-01-31')
                     // });
-                    getImages();
-                    Navigator.pushNamed(
-                      context, 
-                      NewPost.routeName,
-                      arguments: ExtractorNewPost(
-                        image: image
-                      )
-                    );
+                    // getImages();
+                    // Navigator.pushNamed(
+                    //   context, 
+                    //   NewPost.routeName,
+                    //   arguments: ExtractorNewPost(
+                    //     image: image
+                    //   )
+                    // );
+                    
                   }
                 )
               ]
