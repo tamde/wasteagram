@@ -39,6 +39,7 @@ class _AppState extends State<App> {
     };
     return MaterialApp(
       title: 'Wasteagram',
+      theme: ThemeData.dark(),
       // theme: darkTheme ? ThemeData.dark() : ThemeData.light(),
       initialRoute: PostLists.routeName,
       routes: routes,

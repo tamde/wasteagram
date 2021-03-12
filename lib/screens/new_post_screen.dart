@@ -44,24 +44,12 @@ class _NewPostState extends State<NewPost> {
           child: Column(
             children: [
               imageAlign(context),
-              inputFieldBody('weight'),
-              button(context)
+              inputFieldQuantity('quantity'),
+              sendToFirestore(context)
             ]
           )
         )
       );
-        
-      
-      // return ScaffoldWidget(
-      //   title: 'Wasteagram',
-      //   body: Container(
-      //     child: Align(
-      //       alignment: Alignment.topCenter,
-      //       child: Image.file(args.image),
-      //     )
-      //   )
-      // );
-        
     }
   } 
 
@@ -75,21 +63,23 @@ class _NewPostState extends State<NewPost> {
     );
   }
 
-  Widget button(BuildContext context){
+  Widget sendToFirestore(BuildContext context){
     final ExtractorNewPost args = ModalRoute.of(context).settings.arguments;
     return RaisedButton(
       onPressed: () async {
         if (_formKey.currentState.validate()){
           _formKey.currentState.save();
           StorageReference storageReference =
-            FirebaseStorage.instance.ref().child('example3.jpg');
+          // give name of the picture the date and time it was taken
+            FirebaseStorage.instance.ref().child(getDate());
           StorageUploadTask uploadTask = storageReference.putFile(args.image);
           await uploadTask.onComplete;
           final url = await storageReference.getDownloadURL();
           print(url);
           Firestore.instance.collection('posts').add({
-            'weight': 223,
-            'submission_date': DateTime.parse(getDate())
+            'quantity': postEntryField.quantity,
+            'date': DateTime.parse(getDate()),
+            'imageURL': url
           });
           Navigator.pop(context);
         }
@@ -98,14 +88,14 @@ class _NewPostState extends State<NewPost> {
     );
   }
 
-  Widget inputFieldBody(labelText){
+  Widget inputFieldQuantity(labelText){
     return TextFormField(
       decoration: InputDecoration(
         labelText: labelText
       ),
       keyboardType: TextInputType.number,
       onSaved:(value){
-        postEntryField.weight = value;
+        postEntryField.quantity = value;
       },
       validator: (value) {
         if (value.isEmpty){

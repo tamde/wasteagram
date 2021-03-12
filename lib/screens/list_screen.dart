@@ -6,6 +6,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:wasteagram/components/scaffold_widget.dart';
 import 'package:wasteagram/screens/detail_screen.dart';
 import 'package:wasteagram/screens/new_post_screen.dart';
+import 'package:intl/intl.dart';
+
 
 
 class PostLists extends StatefulWidget {
@@ -21,17 +23,6 @@ class PostLists extends StatefulWidget {
 
 class _PostListsState extends State<PostLists> {
 
-  // File image;
-  // final picker = ImagePicker();
-
-  // Future getImages() async {
-  //   final pickedFile = await picker.getImage(source: ImageSource.camera);
-  //   image = File(pickedFile.path);
-  //   return image;
-  // }
-
-  
-
   Widget build(BuildContext context) {
     return ScaffoldWidget(
       body: StreamBuilder(
@@ -41,44 +32,7 @@ class _PostListsState extends State<PostLists> {
             return Column(
               children: [
                 listView(context, snapshot),
-                // Expanded(
-                //   child:  ListView.builder(
-                //     itemCount: snapshot.data.documents.length,
-                //     itemBuilder: (context, index) {
-                //       var post = snapshot.data.documents[index];
-                //       return ListTile(
-                //         leading: Text(post['weight'].toString()),
-                //         title: Text('Post Title'),
-                //         subtitle: Text(post.documentID),
-                //         onTap: (){
-                //           Navigator.pushNamed(
-                //             context,
-                //             Details.routeName,
-                //             arguments: ExtractorDetails(
-                //               title: post.documentID.toString(),
-                //               body: post['weight'].toString()
-                              
-                //             )
-                //           );
-                //         },
-                //       );
-                //     }
-                //   )
-                // ),
                 selectPicButton(context)
-                // RaisedButton(
-                //   child: Text('Select Photo'),
-                //   onPressed: () async {
-                //      var theImage = await getImages();
-                //       Navigator.pushNamed(
-                //       context, 
-                //       NewPost.routeName,
-                //       arguments: ExtractorNewPost(
-                //         image: theImage
-                //       )
-                //     );
-                //   }
-                // )
               ]
             );
           } else {
@@ -88,19 +42,6 @@ class _PostListsState extends State<PostLists> {
                   child: CircularProgressIndicator()
                 ),
                 selectPicButton(context)
-                // RaisedButton(
-                //   child: Text('Select Photo'),
-                //   onPressed: () async {
-                //      var theImage = await getImages();
-                //       Navigator.pushNamed(
-                //       context, 
-                //       NewPost.routeName,
-                //       arguments: ExtractorNewPost(
-                //         image: theImage
-                //       )
-                //     );
-                //   }
-                // )
               ],
             );
           }
@@ -142,18 +83,20 @@ Widget listView(BuildContext context, snapshot) {
       itemCount: snapshot.data.documents.length,
       itemBuilder: (context, index) {
         var post = snapshot.data.documents[index];
+        var date = DateFormat.yMMMMEEEEd().format(post['date'].toDate());
         return ListTile(
-          leading: Text(post['weight'].toString()),
-          title: Text('Post Title'),
+          leading: Text(post['quantity'].toString()),
+          title: Text(date),//Text(post['date'].toString()),
           subtitle: Text(post.documentID),
           onTap: (){
             Navigator.pushNamed(
               context,
               Details.routeName,
               arguments: ExtractorDetails(
-                title: post.documentID.toString(),
-                body: post['weight'].toString()
-                
+                imageURL: post['imageURL'].toString(),
+                body: post['quantity'].toString(),
+                date: date,
+                quantity: post['quantity'].toString()
               )
             );
           },

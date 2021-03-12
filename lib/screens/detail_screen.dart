@@ -6,14 +6,14 @@ import 'dart:io';
 
 
 class ExtractorDetails{
-  final String title;
+  final String quantity;
   final String body;
-  final String rating;
+  final String date;
   final String documentId;
-  final File image;
+  final String imageURL;
 
 
-  ExtractorDetails({this.title, this.body, this.rating, this.documentId, this.image});
+  ExtractorDetails({this.quantity, this.body, this.date, this.documentId, this.imageURL});
 }
 
 class Details extends StatelessWidget {
@@ -29,25 +29,23 @@ class Details extends StatelessWidget {
         child: Column(
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  args.body,
-                  style: TextStyle(
-                    fontSize: 72,
-                  )
-                )
+                Text(args.date),
               ],
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  args.body,
-                  style: TextStyle(
-                    fontSize: 72,
-                  )
-                )
+                Image.network(args.imageURL,
+                  height: 250,
+                ),
               ],
             ),
+            Row(mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(args.quantity)
+            ])
           ]
         )
       )

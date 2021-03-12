@@ -1,8 +1,8 @@
 import 'dart:io';
 
 class PostEntry{
-  String weight;
-  File image;
+  String quantity;
+  String imageURL;
 
-  PostEntry({this.weight, this.image});
+  PostEntry({this.quantity, this.imageURL});
 }
