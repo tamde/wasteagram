@@ -4,6 +4,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import 'package:wasteagram/components/scaffold_widget.dart';
 import 'package:wasteagram/models/post_entry.dart';
+import 'package:intl/intl.dart';
+
 
 class ExtractorNewPost{
   final File image;
@@ -21,6 +23,11 @@ class NewPost extends StatefulWidget {
 
 class _NewPostState extends State<NewPost> {
 
+  getDate(){
+    var date = DateTime.now();
+    return date.toString();
+  }
+
   final _formKey = GlobalKey<FormState>();
   final postEntryField = PostEntry();
 
@@ -32,38 +39,15 @@ class _NewPostState extends State<NewPost> {
     } else {
       return ScaffoldWidget(
         title: 'Wasteagram',
-        body: Container(
+        body: Form(
+          key: _formKey, 
           child: Column(
             children: [
-              Align(
-                alignment: Alignment.topCenter,
-                child:Image.file(
-                  args.image,
-                  height: 250,)
-              ),
-              Form(
-                key: _formKey,
-                child: inputFieldBody('weight')
-              ),
-              RaisedButton(
-                onPressed: () async {
-                  StorageReference storageReference =
-                    FirebaseStorage.instance.ref().child('example2.jpg');
-                  StorageUploadTask uploadTask = storageReference.putFile(args.image);
-                  await uploadTask.onComplete;
-                  final url = await storageReference.getDownloadURL();
-                  print(url);
-                  Firestore.instance.collection('posts').add({
-                    'weight': 222,
-                    'submission_date': DateTime.parse('2020-01-31')
-                  });
-                  Navigator.pop(context);
-                },
-                child: Text('Save'),
-
-              )
-            ],
-          ),
+              imageAlign(context),
+              inputFieldBody('weight'),
+              button(context)
+            ]
+          )
         )
       );
         
@@ -80,6 +64,39 @@ class _NewPostState extends State<NewPost> {
         
     }
   } 
+
+  Widget imageAlign(BuildContext context){
+    final ExtractorNewPost args = ModalRoute.of(context).settings.arguments;
+    return Align(
+      alignment: Alignment.topCenter,
+      child:Image.file(
+        args.image,
+        height: 250,)
+    );
+  }
+
+  Widget button(BuildContext context){
+    final ExtractorNewPost args = ModalRoute.of(context).settings.arguments;
+    return RaisedButton(
+      onPressed: () async {
+        if (_formKey.currentState.validate()){
+          _formKey.currentState.save();
+          StorageReference storageReference =
+            FirebaseStorage.instance.ref().child('example3.jpg');
+          StorageUploadTask uploadTask = storageReference.putFile(args.image);
+          await uploadTask.onComplete;
+          final url = await storageReference.getDownloadURL();
+          print(url);
+          Firestore.instance.collection('posts').add({
+            'weight': 223,
+            'submission_date': DateTime.parse(getDate())
+          });
+          Navigator.pop(context);
+        }
+      },
+      child: Text('Save'),
+    );
+  }
 
   Widget inputFieldBody(labelText){
     return TextFormField(

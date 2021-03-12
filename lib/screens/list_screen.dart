@@ -21,20 +21,14 @@ class PostLists extends StatefulWidget {
 
 class _PostListsState extends State<PostLists> {
 
-  File image;
-  final picker = ImagePicker();
+  // File image;
+  // final picker = ImagePicker();
 
-  Future getImages() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
-    image = File(pickedFile.path);
-    // StorageReference storageReference =
-    //   FirebaseStorage.instance.ref().child('example2.jpg');
-    // StorageUploadTask uploadTask = storageReference.putFile(image);
-    // await uploadTask.onComplete;
-    // final url = await storageReference.getDownloadURL();
-    // print(url);
-    return image;
-  }
+  // Future getImages() async {
+  //   final pickedFile = await picker.getImage(source: ImageSource.camera);
+  //   image = File(pickedFile.path);
+  //   return image;
+  // }
 
   
 
@@ -43,73 +37,128 @@ class _PostListsState extends State<PostLists> {
       body: StreamBuilder(
         stream: Firestore.instance.collection('posts').snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
+          if (snapshot.hasData && snapshot.data.documents != null && snapshot.data.documents.length > 0) {
             return Column(
               children: [
-                Expanded(
-                  child:  ListView.builder(
-                    itemCount: snapshot.data.documents.length,
-                    itemBuilder: (context, index) {
-                      var post = snapshot.data.documents[index];
-                      return ListTile(
-                        leading: Text(post['weight'].toString()),
-                        title: Text('Post Title'),
-                        subtitle: Text(post.documentID),
-                        onTap: (){
-                          Navigator.pushNamed(
-                            context,
-                            Details.routeName,
-                            arguments: ExtractorDetails(
-                              title: post.documentID.toString(),
-                              body: post['weight'].toString()
+                listView(context, snapshot),
+                // Expanded(
+                //   child:  ListView.builder(
+                //     itemCount: snapshot.data.documents.length,
+                //     itemBuilder: (context, index) {
+                //       var post = snapshot.data.documents[index];
+                //       return ListTile(
+                //         leading: Text(post['weight'].toString()),
+                //         title: Text('Post Title'),
+                //         subtitle: Text(post.documentID),
+                //         onTap: (){
+                //           Navigator.pushNamed(
+                //             context,
+                //             Details.routeName,
+                //             arguments: ExtractorDetails(
+                //               title: post.documentID.toString(),
+                //               body: post['weight'].toString()
                               
-                            )
-                          );
-                        },
-                      );
-                    }
-                  )
-                ),
-                RaisedButton(
-                  child: Text('Select Photo'),
-                  onPressed: () async {
-                     var theImage = await getImages();
-                      Navigator.pushNamed(
-                      context, 
-                      NewPost.routeName,
-                      arguments: ExtractorNewPost(
-                        image: theImage
-                      )
-                      );
-
-                  
-
-                    // Firestore.instance.collection('posts').add({
-                    //   'weight': 222,
-                    //   'submission_date': DateTime.parse('2020-01-31')
-                    // });
-                    // getImages();
-                    // Navigator.pushNamed(
-                    //   context, 
-                    //   NewPost.routeName,
-                    //   arguments: ExtractorNewPost(
-                    //     image: image
-                    //   )
-                    // );
-                    
-                  }
-                )
+                //             )
+                //           );
+                //         },
+                //       );
+                //     }
+                //   )
+                // ),
+                selectPicButton(context)
+                // RaisedButton(
+                //   child: Text('Select Photo'),
+                //   onPressed: () async {
+                //      var theImage = await getImages();
+                //       Navigator.pushNamed(
+                //       context, 
+                //       NewPost.routeName,
+                //       arguments: ExtractorNewPost(
+                //         image: theImage
+                //       )
+                //     );
+                //   }
+                // )
               ]
             );
           } else {
-            return Center(child: CircularProgressIndicator());
+            return Column(
+              children: [
+                Center(
+                  child: CircularProgressIndicator()
+                ),
+                selectPicButton(context)
+                // RaisedButton(
+                //   child: Text('Select Photo'),
+                //   onPressed: () async {
+                //      var theImage = await getImages();
+                //       Navigator.pushNamed(
+                //       context, 
+                //       NewPost.routeName,
+                //       arguments: ExtractorNewPost(
+                //         image: theImage
+                //       )
+                //     );
+                //   }
+                // )
+              ],
+            );
           }
         }
-      )    
+      )
     );
   }
 }
 
-Widget listView() {
-  
+Widget selectPicButton(BuildContext context) {
+
+  File image;
+  final picker = ImagePicker();
+
+  Future getImages() async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+    image = File(pickedFile.path);
+    return image;
+  }
+
+  return RaisedButton(
+    child: Text('Select Photo'),
+    onPressed: () async {
+        var theImage = await getImages();
+        Navigator.pushNamed(
+        context, 
+        NewPost.routeName,
+        arguments: ExtractorNewPost(
+          image: theImage
+        )
+      );
+    }
+  );
+}
+
+Widget listView(BuildContext context, snapshot) {
+  return Expanded(
+    child:  ListView.builder(
+      itemCount: snapshot.data.documents.length,
+      itemBuilder: (context, index) {
+        var post = snapshot.data.documents[index];
+        return ListTile(
+          leading: Text(post['weight'].toString()),
+          title: Text('Post Title'),
+          subtitle: Text(post.documentID),
+          onTap: (){
+            Navigator.pushNamed(
+              context,
+              Details.routeName,
+              arguments: ExtractorDetails(
+                title: post.documentID.toString(),
+                body: post['weight'].toString()
+                
+              )
+            );
+          },
+        );
+      }
+    )
+  );
 }
