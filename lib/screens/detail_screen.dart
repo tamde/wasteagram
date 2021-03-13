@@ -11,9 +11,11 @@ class ExtractorDetails{
   final String date;
   final String documentId;
   final String imageURL;
+  final String latitude;
+  final String longitude;
 
 
-  ExtractorDetails({this.quantity, this.body, this.date, this.documentId, this.imageURL});
+  ExtractorDetails({this.quantity, this.body, this.date, this.documentId, this.imageURL, this.latitude, this.longitude});
 }
 
 class Details extends StatelessWidget {
@@ -44,8 +46,17 @@ class Details extends StatelessWidget {
             ),
             Row(mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(args.quantity)
-            ])
+              Text(args.quantity + ' items')
+            ]),
+            Padding(
+              padding: EdgeInsets.all(15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                Text('latitude: ' + args.latitude),
+                Text('longitude: ' + args.longitude)
+              ])
+            ) 
           ]
         )
       )

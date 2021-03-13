@@ -26,7 +26,7 @@ class _PostListsState extends State<PostLists> {
   Widget build(BuildContext context) {
     return ScaffoldWidget(
       body: StreamBuilder(
-        stream: Firestore.instance.collection('posts').snapshots(),
+        stream: Firestore.instance.collection('posts').orderBy('date', descending: true).snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.data.documents != null && snapshot.data.documents.length > 0) {
             return Column(
@@ -86,7 +86,7 @@ Widget listView(BuildContext context, snapshot) {
         var date = DateFormat.yMMMMEEEEd().format(post['date'].toDate());
         return ListTile(
           leading: Text(post['quantity'].toString()),
-          title: Text(date),//Text(post['date'].toString()),
+          title: Text(date),
           subtitle: Text(post.documentID),
           onTap: (){
             Navigator.pushNamed(
@@ -96,7 +96,10 @@ Widget listView(BuildContext context, snapshot) {
                 imageURL: post['imageURL'].toString(),
                 body: post['quantity'].toString(),
                 date: date,
-                quantity: post['quantity'].toString()
+                quantity: post['quantity'].toString(),
+                latitude: post['latitude'].toString(),
+                longitude: post['longitude'].toString()
+
               )
             );
           },

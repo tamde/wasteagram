@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:location/location.dart';
 import 'dart:io';
 import 'package:wasteagram/components/scaffold_widget.dart';
 import 'package:wasteagram/models/post_entry.dart';
-import 'package:intl/intl.dart';
-
 
 class ExtractorNewPost{
   final File image;
@@ -23,13 +22,52 @@ class NewPost extends StatefulWidget {
 
 class _NewPostState extends State<NewPost> {
 
+  final _formKey = GlobalKey<FormState>();
+  final postEntryField = PostEntry();
+
+  @override
+  void initState(){
+    super.initState();
+    retrieveLocation();
+
+  }
+
+  retrieveLocation() async {
+    Location location = new Location();
+
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData _locationData;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        print('Service is not enabled');
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.DENIED) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.GRANTED) {
+        print('location server permission not granted');
+        return;
+      }
+    }
+
+    var coord = await location.getLocation();
+    postEntryField.latitude = coord.latitude;
+    postEntryField.longitude = coord.longitude;
+  }
+
   getDate(){
     var date = DateTime.now();
     return date.toString();
   }
 
-  final _formKey = GlobalKey<FormState>();
-  final postEntryField = PostEntry();
+  
 
   @override
   Widget build(BuildContext context) {
@@ -75,11 +113,15 @@ class _NewPostState extends State<NewPost> {
           StorageUploadTask uploadTask = storageReference.putFile(args.image);
           await uploadTask.onComplete;
           final url = await storageReference.getDownloadURL();
-          print(url);
+          await retrieveLocation();
+          postEntryField.imageURL = url;
+          // print(url);
           Firestore.instance.collection('posts').add({
             'quantity': postEntryField.quantity,
             'date': DateTime.parse(getDate()),
-            'imageURL': url
+            'imageURL': postEntryField.imageURL,
+            'latitude': postEntryField.latitude,
+            'longitude': postEntryField.longitude
           });
           Navigator.pop(context);
         }
