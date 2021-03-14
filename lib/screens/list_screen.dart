@@ -32,7 +32,7 @@ class _PostListsState extends State<PostLists> {
             return Column(
               children: [
                 listView(context, snapshot),
-                selectPicButton(context)
+                // selectPicButton(context)
               ]
             );
           } else {
@@ -41,12 +41,13 @@ class _PostListsState extends State<PostLists> {
                 Center(
                   child: CircularProgressIndicator()
                 ),
-                selectPicButton(context)
+                // selectPicButton(context)
               ],
             );
           }
         }
-      )
+      ),
+      floatingActionButton: selectPicButton(context),
     );
   }
 }
@@ -62,8 +63,8 @@ Widget selectPicButton(BuildContext context) {
     return image;
   }
 
-  return RaisedButton(
-    child: Text('Select Photo'),
+  return FloatingActionButton(
+    child: Icon(Icons.camera_alt),
     onPressed: () async {
         var theImage = await getImages();
         Navigator.pushNamed(

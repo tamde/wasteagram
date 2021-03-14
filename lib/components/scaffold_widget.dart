@@ -21,6 +21,7 @@ class ScaffoldWidget extends StatelessWidget {
       ),
       // endDrawer: ThemeToggle(darkTheme: darkTheme, toggleTheme: toggleTheme),
       body: this.body,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: this.floatingActionButton
       
     );

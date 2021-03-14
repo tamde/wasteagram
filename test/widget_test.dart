@@ -1,15 +1,26 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility that Flutter provides. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:wasteagram/models/post_entry.dart';
+import 'package:wasteagram/models/get_date.dart';
+
 
 void main() {
+  test('post entry should hold the correct data types', () {
+    var entry = PostEntry();
 
+    entry.imageURL = 'www.hello.com';
+    entry.quantity = 3;
+    entry.latitude = 394141.0;
+    entry.longitude = 912834.2;
+
+    expect(entry.imageURL is String, true);
+    expect(entry.quantity is int, true);
+    expect(entry.latitude is double, true);
+    expect(entry.longitude is double, true);
+  });
+
+  test('should return a date as a string', () {
+    var dateTime = GetDate();
+    
+    expect(dateTime.getDate() is String, true);
+  });
 }
